@@ -2,11 +2,10 @@ OS=$(shell uname)
 
 JAVA_HOME=/usr/lib/jvm/jdk-13
 
-build_and_test: clean test
+build: test
 
 info:
 	@echo OS=${OS}
-	@echo LIBSUFFIX=${LIBSUFFIX}
 	@echo JAVA_HOME=${JAVA_HOME}
 
 clean:

@@ -1,0 +1,42 @@
+OS=$(shell uname)
+
+JAVA_HOME=/usr/lib/jvm/jdk-13
+
+build: test
+
+info:
+	@echo OS=${OS}
+	@echo JAVA_HOME=${JAVA_HOME}
+
+clean:
+	${RM} -rf build 
+
+build/org.grfstuff.compiler:
+	mkdir -p build/org.grfstuff.compiler
+	${JAVA_HOME}/bin/javac\
+      -g \
+      -d build/org.grfstuff.compiler\
+		--add-modules jdk.internal.vm.ci\
+		--add-exports jdk.internal.vm.ci/jdk.vm.ci.common=jdk.internal.vm.compiler\
+      --add-exports jdk.internal.vm.ci/jdk.vm.ci.hotspot=jdk.internal.vm.compiler\
+      --patch-module jdk.internal.vm.compiler=src/jdk.internal.vm.compiler\
+      $(shell find src/jdk.internal.vm.compiler -name *.java)\
+      $(shell find src/org.grfstuff.compiler -name *.java | grep -v module-info)
+
+build/org.grfstuff.violajones: 
+	mkdir -p build/org.grfstuff.violajones
+	${JAVA_HOME}/bin/javac -g \
+      -d build/org.grfstuff.violajones\
+      --source-path src/org.grfstuff.violajones\
+      $(shell find src/org.grfstuff.violajones -name *.java)
+
+test: clean build/org.grfstuff.compiler build/org.grfstuff.violajones
+	${JAVA_HOME}/bin/java \
+      -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler -XX:-TieredCompilation\
+      -XX:CompileCommand=compileonly,org/grfstuff/violajones/ViolaJones.compute\
+      -XX:CompileCommand=compileonly,org/grfstuff/violajones/ViolaJOnes.run\
+       --patch-module jdk.internal.vm.compiler=build/org.grfstuff.compiler\
+		 -Dbackend.factory=org.grfstuff.compiler.GrfStuffHotSpotBackendFactory\
+		 -classpath build/org.grfstuff.violajones\
+      org.grfstuff.violajones.ViolaJones
+
