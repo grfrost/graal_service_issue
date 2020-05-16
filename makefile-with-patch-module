@@ -22,10 +22,9 @@ build/org.grfstuff.compiler:
 		--add-exports jdk.internal.vm.ci/jdk.vm.ci.code=jdk.internal.vm.compiler\
 		--add-exports jdk.internal.vm.ci/jdk.vm.ci.common=jdk.internal.vm.compiler\
       --add-exports jdk.internal.vm.ci/jdk.vm.ci.hotspot=jdk.internal.vm.compiler\
-      --patch-module jdk.internal.vm.compiler=org.grfstuff.compiler/src/main\
+      --patch-module jdk.internal.vm.compiler=org.grfstuff.compiler/src/main/java\
       $(shell find org.grfstuff.compiler/src/main/java -name *.java | grep -v module-info)
 
-   #   $(shell find jdk.internal.vm.compiler/src/main/java -name *.java)\
 
 build/org.grfstuff.violajones: 
 	mkdir -p build/org.grfstuff.violajones
